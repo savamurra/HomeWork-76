@@ -6,7 +6,7 @@ import {RootState} from "../../app/store.ts";
 interface IMessageSlice {
     messages: MessageMutation[];
     createLoading: boolean;
-    getLoading: boolean;
+    getLoading: boolean
 }
 
 const initialState: IMessageSlice = {
@@ -16,6 +16,8 @@ const initialState: IMessageSlice = {
 }
 
 export const allMessage = (state: RootState) => state.messages.messages;
+export const isCreating = (state: RootState) => state.messages.createLoading;
+
 
 const messageSlice = createSlice({
     name: "message",

@@ -4,7 +4,7 @@ import {Box, Button, Card, CardActions, CardContent, TextField, Typography} from
 import {Message} from "../../types";
 import {createMessage, getMessage} from "./messageThunk.ts";
 import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
-import {allMessage} from "./messageSlice.ts";
+import {allMessage, isCreating} from "./messageSlice.ts";
 import  dayjs from "dayjs";
 
 
@@ -15,11 +15,13 @@ const initialState = {
 const ProductForm = () => {
     const [form, setForm] = useState<Message>(initialState);
     const dispatch = useAppDispatch();
+    const createLoading = useAppSelector(isCreating);
 
     const messages = useAppSelector(allMessage);
     useEffect(() => {
         dispatch(getMessage());
     }, [dispatch]);
+
 
 
     const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,9 +31,13 @@ const ProductForm = () => {
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await dispatch(createMessage(form));
-        setForm(initialState);
-        await dispatch(getMessage());
+        if (form.author.trim().length === 0 || form.message.trim().length === 0) {
+            alert('Вы не заполнили поля');
+        } else {
+            await dispatch(createMessage(form));
+            setForm(initialState);
+            await dispatch(getMessage());
+        }
     }
     return (
         <form onSubmit={onSubmit}>
@@ -57,33 +63,39 @@ const ProductForm = () => {
                         backgroundColor: "#fff",
                     }}
                 >
-                    {messages.map((message) => (
-                        <Card
-                            key={message.id}
-                            sx={{
-                                marginBottom: "10px",
-                                boxShadow: 2,
-                                borderRadius: "8px",
-                            }}
-                        >
-                            <CardContent>
-                                <Typography gutterBottom sx={{fontSize: 20}}>
-                                    <strong>Author: {message.author}</strong>
-                                </Typography>
-                                <Typography gutterBottom sx={{fontSize: 18}}>
-                                    Message: {message.message}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Typography
-                                    variant="body2"
-                                    sx={{color: "text.secondary", fontSize: 14}}
+                    {messages.length === 0 ? (
+                        <Typography variant="h5" sx={{textAlign: "center"}}>No messages yet</Typography>
+                    ) : (
+                        messages.map((message) => {
+                            return (
+                                <Card
+                                    key={message.id}
+                                    sx={{
+                                        marginBottom: "10px",
+                                        boxShadow: 2,
+                                        borderRadius: "8px",
+                                    }}
                                 >
-                                    Created on: {dayjs(message.dateTime).format('YYYY-MM-DD HH:mm:ss')}
-                                </Typography>
-                            </CardActions>
-                        </Card>
-                    ))}
+                                    <CardContent>
+                                        <Typography gutterBottom sx={{fontSize: 20}}>
+                                            <strong>Author: {message.author}</strong>
+                                        </Typography>
+                                        <Typography gutterBottom sx={{fontSize: 18}}>
+                                            Message: {message.message}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{color: "text.secondary", fontSize: 14}}
+                                        >
+                                            Created on: {dayjs(message.dateTime).format('YYYY-MM-DD HH:mm:ss')}
+                                        </Typography>
+                                    </CardActions>
+                                </Card>
+                            );
+                        })
+                    )}
                 </Box>
                 <TextField
                     sx={{width: "100%", marginBottom: "10px"}}
@@ -110,8 +122,9 @@ const ProductForm = () => {
                     type="submit"
                     variant="contained"
                     sx={{width: "100%"}}
+                    disabled={createLoading}
                 >
-                    Create
+                    Send
                 </Button>
             </Box>
 
