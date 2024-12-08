@@ -1,10 +1,13 @@
 import MessagesForm from "./features/Messages/MessagesForm.tsx";
+import {Container} from "@mui/material";
 
 const App = () => {
 
     return (
         <>
-            <MessagesForm />
+            <Container>
+                <MessagesForm />
+            </Container>
         </>
     )
 };
