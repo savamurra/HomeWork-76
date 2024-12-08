@@ -14,7 +14,7 @@ const fileDb = {
         }
     },
     async getMessage() {
-        return data;
+        return data.slice(-30).reverse();
     },
     async addMessage(item: Message) {
         const id = crypto.randomUUID().toString();
