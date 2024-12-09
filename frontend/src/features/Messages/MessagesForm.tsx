@@ -23,6 +23,21 @@ const ProductForm = () => {
     }, [dispatch]);
 
 
+    const newFormatDate = (date: string) => {
+        const today = dayjs();
+        const existingDate = dayjs(date);
+
+        if (existingDate.isSame(today, "day")) {
+            return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+        } else if (existingDate.isSame(today.subtract(1, "day"), "day")) {
+            return "Вчера"
+        } else if (existingDate.isSame(today, "year")) {
+            return dayjs(date).format("MMMM-D");
+        } else {
+            return dayjs(date).format("YYYY год");
+        }
+    }
+
 
     const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -89,7 +104,7 @@ const ProductForm = () => {
                                             variant="body2"
                                             sx={{color: "text.secondary", fontSize: 14}}
                                         >
-                                            Created on: {dayjs(message.dateTime).format('YYYY-MM-DD HH:mm:ss')}
+                                            Created on: {newFormatDate(message.dateTime)}
                                         </Typography>
                                     </CardActions>
                                 </Card>
